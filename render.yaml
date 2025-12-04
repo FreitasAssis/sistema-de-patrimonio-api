@@ -17,8 +17,13 @@ services:
         value: 10000 # Render default port
       - key: HOST
         value: 0.0.0.0
+
+      # Database Configuration (Supabase)
+      # IMPORTANT: Use Connection Pooler for better compatibility with Render
+      # Supabase Dashboard → Settings → Database → Connection Pooling → Transaction mode
+      # Use the pooler host (e.g., aws-0-us-west-1.pooler.supabase.com) instead of direct connection
       - key: DB_HOST
-        sync: false # Set manually in Render dashboard from Supabase
+        sync: false # Set manually: Prefer connection pooler host for IPv4 compatibility
       - key: DB_PORT
         value: 5432
       - key: DB_NAME
@@ -27,10 +32,16 @@ services:
         sync: false # Set manually from Supabase
       - key: DB_PASSWORD
         sync: false # Set manually from Supabase (secret)
+      - key: DB_SSL
+        value: true # Required for Supabase connections
+
+      # JWT Configuration
       - key: JWT_SECRET
         generateValue: true # Render will auto-generate a secure secret
       - key: JWT_EXPIRES_IN
         value: 7d
+
+      # CORS Configuration
       - key: FRONTEND_URL
         sync: false # Set to your frontend URL (e.g., https://your-frontend.vercel.app)
     autoDeploy: true # Auto-deploy on git push
