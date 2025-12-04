@@ -3,14 +3,14 @@ services:
   - type: web
     name: sistema-patrimonio-api
     runtime: node
-    env: node
-    node: 20 # Specify Node.js 20 (compatible with fast-jwt)
     region: oregon # Free tier region
     plan: free
     buildCommand: yarn install && yarn build
     startCommand: yarn start
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
       - key: NODE_ENV
         value: production
       - key: PORT
