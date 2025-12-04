@@ -375,52 +375,251 @@ Similar ao Thunder Client, mas com interface mais robusta.
 
 ---
 
-## 🚢 Deploy
+## 🚢 Deploy (100% Free)
 
-### Railway
+### Recommended: Render + Supabase ($0/month)
 
+This guide shows you how to deploy completely free using:
+- **Render** (API hosting - Free tier)
+- **Supabase** (PostgreSQL database - Free tier)
+
+---
+
+### Step 1: Setup Supabase Database
+
+#### 1.1. Create Supabase Account
+1. Go to [https://supabase.com](https://supabase.com)
+2. Sign up with GitHub (free)
+3. Click **"New Project"**
+
+#### 1.2. Create Database
+- **Name**: sistema-patrimonio-db (or any name)
+- **Database Password**: Create a strong password (save it!)
+- **Region**: Choose closest to your users
+- **Pricing Plan**: Free
+- Click **"Create new project"** (takes ~2 minutes)
+
+#### 1.3. Get Connection Details
+1. Go to **Project Settings** (gear icon) → **Database**
+2. Scroll to **Connection Info**
+3. Copy these values:
+   ```
+   Host: db.xxxxxxxxxxxxx.supabase.co
+   Port: 5432
+   Database: postgres
+   User: postgres
+   Password: [your password from step 1.2]
+   ```
+
+Keep this tab open - you'll need these values for Render!
+
+---
+
+### Step 2: Deploy API on Render
+
+#### 2.1. Push Code to GitHub
 ```bash
-# Instalar CLI
+# Initialize git (if not done)
+git init
+git add .
+git commit -m "Initial commit"
+
+# Create GitHub repo and push
+git remote add origin https://github.com/YOUR_USERNAME/sistema-patrimonio-api.git
+git branch -M main
+git push -u origin main
+```
+
+#### 2.2. Create Render Account
+1. Go to [https://render.com](https://render.com)
+2. Sign up with GitHub (free)
+3. Click **"New +"** → **"Web Service"**
+
+#### 2.3. Connect Repository
+1. Click **"Connect repository"**
+2. Select your `sistema-patrimonio-api` repository
+3. Click **"Connect"**
+
+#### 2.4. Configure Web Service
+
+**Basic Settings:**
+- **Name**: `sistema-patrimonio-api` (or any name)
+- **Region**: Oregon (Free)
+- **Branch**: `main`
+- **Runtime**: Node
+- **Build Command**: `yarn install && yarn build`
+- **Start Command**: `node dist/server.js`
+- **Instance Type**: **Free**
+
+**Environment Variables:**
+Click **"Advanced"** and add these variables using your Supabase connection info:
+
+| Key | Value | Notes |
+|-----|-------|-------|
+| `NODE_ENV` | `production` | |
+| `PORT` | `10000` | Render default port |
+| `HOST` | `0.0.0.0` | |
+| `DB_HOST` | `db.xxxxx.supabase.co` | From Supabase Step 1.3 |
+| `DB_PORT` | `5432` | |
+| `DB_NAME` | `postgres` | |
+| `DB_USER` | `postgres` | |
+| `DB_PASSWORD` | `your-supabase-password` | From Supabase Step 1.2 |
+| `JWT_SECRET` | Click "Generate" | Render will create a secure secret |
+| `JWT_EXPIRES_IN` | `7d` | |
+| `FRONTEND_URL` | `http://localhost:5173` | Update later with your frontend URL |
+
+Click **"Create Web Service"**
+
+#### 2.5. Wait for Deployment
+- First build takes ~3-5 minutes
+- Watch logs in Render dashboard
+- Once you see "Live" status, API is deployed!
+
+---
+
+### Step 3: Initialize Database
+
+#### 3.1. Open Render Shell
+1. In Render dashboard, click your service
+2. Go to **"Shell"** tab (top right)
+3. This opens a terminal in your deployed app
+
+#### 3.2. Run Database Setup
+```bash
+# Run migrations and seeds
+bash scripts/setup-db.sh
+```
+
+This will:
+- Create all database tables
+- Insert default data (perfis, categorias, localizacoes)
+- Create admin user
+
+**Default Credentials:**
+- Email: `admin@email.com`
+- Password: `admin123`
+
+⚠️ **IMPORTANT**: Change admin password after first login!
+
+---
+
+### Step 4: Test Your API
+
+#### 4.1. Get API URL
+Your API is now live at:
+```
+https://sistema-patrimonio-api.onrender.com
+```
+(Replace with your actual Render URL from dashboard)
+
+#### 4.2. Test Health Check
+```bash
+curl https://sistema-patrimonio-api.onrender.com/health
+```
+
+Should return:
+```json
+{"status":"ok","timestamp":"2024-12-04T..."}
+```
+
+#### 4.3. Test Login
+```bash
+curl -X POST https://sistema-patrimonio-api.onrender.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@email.com","password":"admin123"}'
+```
+
+Should return a JWT token!
+
+---
+
+### Step 5: Update Frontend URL (Optional)
+
+When you deploy your frontend:
+
+1. Go to Render dashboard → Your service
+2. **Environment** tab
+3. Edit `FRONTEND_URL` to your frontend URL
+4. Click **"Save Changes"** (auto-redeploys)
+
+---
+
+### Deployment Notes
+
+#### Free Tier Limitations
+- **Cold starts**: API spins down after 15 mins of inactivity
+  - First request after inactivity: ~30 seconds delay
+  - Subsequent requests: instant
+  - Perfect for internal parish use
+- **750 hours/month**: Enough for 24/7 uptime
+- **No credit card required**
+
+#### Auto-Deploy
+- Every `git push` to `main` branch triggers automatic deployment
+- Check logs in Render dashboard to monitor deployments
+
+#### Database Backups
+- Supabase free tier: 7 days backup retention
+- Can export database manually anytime
+
+---
+
+### Alternative Deployment Options
+
+#### Railway (Alternative)
+```bash
+# Install CLI
 npm install -g @railway/cli
 
-# Login e deploy
+# Login and deploy
 railway login
 railway init
 railway up
 
-# Adicionar PostgreSQL
+# Add PostgreSQL
 railway add postgresql
 
-# Executar migrations
+# Run migrations
 railway run yarn db:migrate
 railway run yarn db:seed
 ```
 
-### Render
+#### Fly.io (No Cold Starts)
+Better performance but more complex setup. See [Fly.io docs](https://fly.io/docs).
 
-1. Conecte repositório no Render
-2. Crie Web Service:
-   - Build: `yarn install && yarn build`
-   - Start: `yarn start`
-3. Adicione PostgreSQL database
-4. Configure variáveis de ambiente
-5. Execute migrations via Shell:
-   ```bash
-   yarn db:migrate
-   yarn db:seed
-   ```
+---
 
-### Variáveis de Ambiente (Produção)
+### Troubleshooting Deployment
 
-```env
-NODE_ENV=production
-DB_HOST=<cloud-db-host>
-DB_PORT=5432
-DB_NAME=<db-name>
-DB_USER=<db-user>
-DB_PASSWORD=<db-password>
-JWT_SECRET=<strong-random-secret>
-FRONTEND_URL=https://seu-frontend.com
+#### Error: Cannot connect to database
+**Solution:**
+- Verify Supabase connection details in Render environment variables
+- Check DB_HOST, DB_PASSWORD are correct
+- Ensure Supabase project is active (not paused)
+
+#### Error: Migrations failed
+**Solution:**
+```bash
+# In Render Shell, check database connection
+yarn db:migrate:undo:all
+yarn db:migrate
+```
+
+#### Error: Port already in use
+**Solution:**
+- Render automatically sets PORT=10000
+- Ensure your code reads `process.env.PORT` (already configured in src/server.ts)
+
+#### Cold start is too slow
+**Solutions:**
+- Upgrade to Render Starter ($7/month) for no cold starts
+- Or use Fly.io free tier (no cold starts)
+- Or keep a browser tab open pinging `/health` every 10 mins
+
+#### Check deployment logs
+```bash
+# View logs in real-time
+# Go to Render dashboard → Your service → Logs tab
 ```
 
 ---
