@@ -1,3 +1,5 @@
+import sequelize from '../config/database';
+
 // Reference tables (lookup tables)
 export { Perfil } from './Perfil';
 export { Categoria } from './Categoria';
@@ -8,3 +10,6 @@ export { TipoMovimentacao } from './TipoMovimentacao';
 export { User } from './User';
 export { Bem } from './Bem';
 export { Movimentacao } from './Movimentacao';
+
+// Default export for Sequelize
+export default sequelize;
