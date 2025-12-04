@@ -4,6 +4,7 @@ services:
     name: sistema-patrimonio-api
     runtime: node
     env: node
+    node: 20 # Specify Node.js 20 (compatible with fast-jwt)
     region: oregon # Free tier region
     plan: free
     buildCommand: yarn install && yarn build
