@@ -25,7 +25,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Create Fastify instance
 const fastify = Fastify({
-  logger: NODE_ENV === 'development' ? {
+  logger: NODE_ENV === 'production' ? true : {
     transport: {
       target: 'pino-pretty',
       options: {
@@ -33,7 +33,7 @@ const fastify = Fastify({
         ignore: 'pid,hostname',
       },
     },
-  } : true,
+  },
 });
 
 // Register CORS

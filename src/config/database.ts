@@ -11,7 +11,15 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME || 'patrimonio_db',
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || '',
-  models: [path.join(__dirname, '../models')],
+  models: [
+    path.join(__dirname, '..', 'models', 'Perfil'),
+    path.join(__dirname, '..', 'models', 'Categoria'),
+    path.join(__dirname, '..', 'models', 'Localizacao'),
+    path.join(__dirname, '..', 'models', 'TipoMovimentacao'),
+    path.join(__dirname, '..', 'models', 'User'),
+    path.join(__dirname, '..', 'models', 'Bem'),
+    path.join(__dirname, '..', 'models', 'Movimentacao'),
+  ],
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {
     max: 5,
