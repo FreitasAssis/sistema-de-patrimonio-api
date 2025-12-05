@@ -1,49 +1,49 @@
-# Sistema de Patrimônio API
+# Asset Management System API
 
-Backend API para o Sistema de Patrimônio usando **Fastify**, **Sequelize**, **PostgreSQL** e **TypeScript**.
+Backend API for the Asset Management System using **Fastify**, **Sequelize**, **PostgreSQL** and **TypeScript**.
 
-Migração de SQLite (browser-based) para PostgreSQL (cloud database) com arquitetura relacional profissional.
+Migration from SQLite (browser-based) to PostgreSQL (cloud database) with professional relational architecture.
 
 ---
 
-## 📋 Índice
+## 📋 Table of Contents
 
-- [Tecnologias](#-tecnologias)
-- [Arquitetura](#-arquitetura-do-banco-de-dados)
-- [Instalação](#-instalação)
-- [Uso](#-uso)
+- [Technologies](#-technologies)
+- [Database Architecture](#-database-architecture)
+- [Installation](#-installation)
+- [Usage](#-usage)
 - [API Endpoints](#-api-endpoints)
-- [Autenticação](#-autenticação)
-- [Testes](#-testes)
-- [Deploy](#-deploy)
+- [Authentication](#-authentication)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
 - [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
 ### Backend
-- **Fastify** - Framework web rápido e eficiente
-- **Sequelize + TypeScript** - ORM com decorators TypeScript
-- **PostgreSQL** - Banco de dados relacional
-- **Zod** - Validação de schemas
-- **JWT (jsonwebtoken)** - Autenticação com tokens
-- **bcrypt** - Hash de senhas
+- **Fastify** - Fast and efficient web framework
+- **Sequelize + TypeScript** - ORM with TypeScript decorators
+- **PostgreSQL** - Relational database
+- **Zod** - Schema validation
+- **JWT (jsonwebtoken)** - Token-based authentication
+- **bcrypt** - Password hashing
 
-### Estrutura
-- TypeScript para type safety
-- Migrations & Seeds com sequelize-cli
-- Middleware de autenticação e validação
-- Soft deletes com flag `ativo`
+### Structure
+- TypeScript for type safety
+- Migrations & Seeds with sequelize-cli
+- Authentication and validation middleware
+- Soft deletes with `ativo` flag
 - Role-based access control (RBAC)
 
 ---
 
-## 🏗️ Arquitetura do Banco de Dados
+## 🏗️ Database Architecture
 
-### Design Relacional (vs ENUMs)
+### Relational Design (vs ENUMs)
 
-Ao invés de usar ENUMs, implementamos **tabelas de referência** para maior flexibilidade:
+Instead of using ENUMs, we implemented **reference tables** for greater flexibility:
 
 ```
 ┌─────────────┐      ┌──────────┐      ┌─────────┐
@@ -66,93 +66,93 @@ Ao invés de usar ENUMs, implementamos **tabelas de referência** para maior fle
 └─────────────┘
 ```
 
-### Tabelas de Referência
+### Reference Tables
 
-1. **perfis** - Papéis de usuário (ADMIN, USER)
-   - Armazena permissões em campo JSONB
-   - Permite criar novos perfis dinamicamente
+1. **perfis** - User roles (ADMIN, USER)
+   - Stores permissions in JSONB field
+   - Allows creating new profiles dynamically
 
-2. **categorias** - Categorias de bens
-   - Móvel, Objeto Litúrgico, Eletrônico, etc.
-   - Admins podem adicionar novas via API
+2. **categorias** - Asset categories
+   - Furniture, Liturgical Objects, Electronics, etc.
+   - Admins can add new ones via API
 
-3. **localizacoes** - Localizações físicas
-   - Igreja Matriz, Igreja do P.O, etc.
-   - Inclui endereço, responsável, telefone
+3. **localizacoes** - Physical locations
+   - Main Church, Secondary Church, etc.
+   - Includes address, responsible person, phone
 
-4. **tipos_movimentacao** - Tipos de movimentação
-   - Empréstimo, Devolução
-   - Flag `requerDevolucao` indica se precisa retorno
+4. **tipos_movimentacao** - Movement types
+   - Loan, Return
+   - `requerDevolucao` flag indicates if return is required
 
-### Tabelas Principais
+### Main Tables
 
-5. **usuarios** - Usuários do sistema
-   - Foreign key para `perfis`
-   - Senha criptografada automaticamente (Sequelize hooks)
-   - Soft delete com `ativo`
+5. **usuarios** - System users
+   - Foreign key to `perfis`
+   - Password automatically encrypted (Sequelize hooks)
+   - Soft delete with `ativo`
 
-6. **bens** - Bens patrimoniais
-   - Foreign keys para `categorias` e `localizacoes`
-   - Tombo único
-   - Suporta imagens em base64
+6. **bens** - Assets
+   - Foreign keys to `categorias` and `localizacoes`
+   - Unique `tombo` identifier
+   - Supports base64 images
 
-7. **movimentacoes** - Empréstimos/Devoluções
-   - Foreign keys para `bens`, `tipos_movimentacao`, `usuarios`
-   - Campo `dataDevolucao` null = empréstimo ativo
-   - Rastreia qual usuário registrou a movimentação
+7. **movimentacoes** - Loans/Returns
+   - Foreign keys to `bens`, `tipos_movimentacao`, `usuarios`
+   - `dataDevolucao` null = active loan
+   - Tracks which user registered the movement
 
-### Benefícios desta Arquitetura
+### Architecture Benefits
 
-✅ Admins podem adicionar categorias/localizações via UI (sem código)
-✅ Melhor integridade de dados com foreign keys
-✅ Fácil auditoria e relatórios
-✅ Escalável para novos recursos
-✅ Soft deletes preservam histórico
+✅ Admins can add categories/locations via UI (no code changes)
+✅ Better data integrity with foreign keys
+✅ Easy auditing and reporting
+✅ Scalable for new features
+✅ Soft deletes preserve history
 
 ---
 
-## 🔧 Instalação
+## 🔧 Installation
 
-### 1. Pré-requisitos
+### 1. Prerequisites
 
 - Node.js 18+
-- PostgreSQL 12+ (local ou cloud)
-- Yarn ou npm
+- PostgreSQL 12+ (local or cloud)
+- Yarn or npm
 
-### 2. Configurar PostgreSQL
+### 2. Setup PostgreSQL
 
-#### Opção A: PostgreSQL Local (macOS)
+#### Option A: Local PostgreSQL (macOS)
 ```bash
 brew install postgresql
 brew services start postgresql
 createdb patrimonio_db
 ```
 
-#### Opção B: PostgreSQL na Nuvem (Recomendado)
+#### Option B: Cloud PostgreSQL (Recommended)
 
-Escolha um provedor:
+Choose a provider:
 
-- **[Supabase](https://supabase.com)** - 500MB free, fácil setup
+- **[Supabase](https://supabase.com)** - 500MB free, easy setup
 - **[Neon](https://neon.tech)** - Serverless PostgreSQL
-- **[Railway](https://railway.app)** - $5 credit grátis
-- **[Render](https://render.com)** - PostgreSQL free (90 dias)
+- **[Railway](https://railway.app)** - $5 free credit
+- **[Render](https://render.com)** - Free PostgreSQL (90 days)
 
-Após criar, copie a **connection string**.
+After creating, copy the **connection string**.
 
-### 3. Instalar Dependências
+### 3. Install Dependencies
 
 ```bash
 cd sistema-de-patrimonio-api
 yarn install
 ```
 
-### 4. Configurar Variáveis de Ambiente
+### 4. Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-Edite `.env` com suas credenciais:
+Edit `.env` with your credentials:
 
 ```env
 # Database (Local)
@@ -162,57 +162,57 @@ DB_NAME=patrimonio_db
 DB_USER=postgres
 DB_PASSWORD=your_password
 
-# Database (Cloud - exemplo Supabase)
+# Database (Cloud - Supabase example)
 # DB_HOST=db.xxxxxxxxxxxxx.supabase.co
 # DB_PORT=5432
 # DB_NAME=postgres
 # DB_USER=postgres
 # DB_PASSWORD=your_supabase_password
 
-# JWT Secret (MUDE EM PRODUÇÃO!)
+# JWT Secret (CHANGE IN PRODUCTION!)
 JWT_SECRET=change-this-secret-in-production
 
 # Frontend URL
 FRONTEND_URL=http://localhost:5173
 ```
 
-### 5. Executar Migrations
+### 5. Run Migrations
 
 ```bash
 yarn db:migrate
 ```
 
-Isso cria todas as tabelas no banco.
+This creates all tables in the database.
 
-### 6. Executar Seeds
+### 6. Run Seeds
 
 ```bash
 yarn db:seed
 ```
 
-Isso cria:
-- ✅ Perfis padrão (ADMIN, USER)
-- ✅ Categorias padrão
-- ✅ Localizações padrão
-- ✅ Tipos de movimentação
-- ✅ Usuário admin: **admin@email.com** / **admin123**
+This creates:
+- ✅ Default profiles (ADMIN, USER)
+- ✅ Default categories
+- ✅ Default locations
+- ✅ Movement types
+- ✅ Admin user: **admin@email.com** / **admin123**
 
 ---
 
-## 🏃 Uso
+## 🏃 Usage
 
-### Desenvolvimento (com hot reload)
+### Development (with hot reload)
 ```bash
 yarn dev
 ```
 
-### Produção
+### Production
 ```bash
 yarn build
 yarn start
 ```
 
-Servidor rodará em: **http://localhost:3000**
+Server will run at: **http://localhost:3000**
 
 ### Health Check
 ```bash
@@ -223,56 +223,56 @@ curl http://localhost:3000/health
 
 ## 📚 API Endpoints
 
-### Autenticação
+### Authentication
 
-| Método | Rota | Descrição | Auth |
-|--------|------|-----------|------|
-| POST | `/api/auth/login` | Login | Não |
-| POST | `/api/auth/logout` | Logout | Sim |
-| GET | `/api/auth/me` | Dados do usuário logado | Sim |
-| POST | `/api/auth/recover-password` | Recuperar senha | Não |
-| PUT | `/api/auth/change-password` | Alterar senha | Sim |
+| Method | Route | Description | Auth |
+|--------|-------|-------------|------|
+| POST | `/api/auth/login` | Login | No |
+| POST | `/api/auth/logout` | Logout | Yes |
+| GET | `/api/auth/me` | Get current user data | Yes |
+| POST | `/api/auth/recover-password` | Recover password | No |
+| PATCH | `/api/auth/change-password` | Change password | Yes |
 
-### Usuários
+### Users
 
-| Método | Rota | Descrição | Permissão |
-|--------|------|-----------|-----------|
-| GET | `/api/users` | Listar usuários | Admin |
-| GET | `/api/users/:id` | Buscar usuário | Autenticado |
-| POST | `/api/users` | Criar usuário | Admin |
-| PUT | `/api/users/:id` | Atualizar usuário | Admin |
-| DELETE | `/api/users/:id` | Excluir usuário | Admin |
+| Method | Route | Description | Permission |
+|--------|-------|-------------|------------|
+| GET | `/api/users` | List users | Admin |
+| GET | `/api/users/:id` | Get user | Authenticated |
+| POST | `/api/users` | Create user | Admin |
+| PATCH | `/api/users/:id` | Update user | Admin |
+| DELETE | `/api/users/:id` | Delete user | Admin |
 
-### Bens
+### Assets (Bens)
 
-| Método | Rota | Descrição | Permissão |
-|--------|------|-----------|-----------|
-| GET | `/api/bens` | Listar bens | Autenticado |
-| GET | `/api/bens/:id` | Buscar bem | Autenticado |
-| GET | `/api/bens/tombo/:tombo` | Buscar por tombo | Autenticado |
-| POST | `/api/bens` | Criar bem | Autenticado |
-| PUT | `/api/bens/:id` | Atualizar bem | Autenticado |
-| DELETE | `/api/bens/:id` | Excluir bem | Autenticado |
+| Method | Route | Description | Permission |
+|--------|-------|-------------|------------|
+| GET | `/api/bens` | List assets | Authenticated |
+| GET | `/api/bens/:id` | Get asset | Authenticated |
+| GET | `/api/bens/tombo/:tombo` | Get by tombo | Authenticated |
+| POST | `/api/bens` | Create asset | Authenticated |
+| PATCH | `/api/bens/:id` | Update asset | Authenticated |
+| DELETE | `/api/bens/:id` | Delete asset | Authenticated |
 
-### Movimentações
+### Movements (Movimentações)
 
-| Método | Rota | Descrição | Permissão |
-|--------|------|-----------|-----------|
-| GET | `/api/movimentacoes` | Listar todas | Autenticado |
-| GET | `/api/movimentacoes/active` | Empréstimos ativos | Autenticado |
-| GET | `/api/movimentacoes/:id` | Buscar movimentação | Autenticado |
-| POST | `/api/movimentacoes` | Criar movimentação | Autenticado |
-| PUT | `/api/movimentacoes/:id` | Atualizar | Autenticado |
-| POST | `/api/movimentacoes/:id/return` | Registrar devolução | Autenticado |
+| Method | Route | Description | Permission |
+|--------|-------|-------------|------------|
+| GET | `/api/movimentacoes` | List all | Authenticated |
+| GET | `/api/movimentacoes/active` | Active loans | Authenticated |
+| GET | `/api/movimentacoes/:id` | Get movement | Authenticated |
+| POST | `/api/movimentacoes` | Create movement | Authenticated |
+| PATCH | `/api/movimentacoes/:id` | Update movement | Authenticated |
+| POST | `/api/movimentacoes/:id/return` | Register return | Authenticated |
 
-### Tabelas de Referência
+### Reference Tables
 
-Todas seguem o mesmo padrão:
+All follow the same pattern:
 
-| Método | Permissão |
-|--------|-----------|
-| GET | Qualquer usuário autenticado |
-| POST/PUT/DELETE | Admin apenas |
+| Method | Permission |
+|--------|------------|
+| GET | Any authenticated user |
+| POST/PATCH/DELETE | Admin only |
 
 **Endpoints:**
 - `/api/categorias`
@@ -282,9 +282,9 @@ Todas seguem o mesmo padrão:
 
 ---
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-A API usa **JWT (JSON Web Tokens)**.
+The API uses **JWT (JSON Web Tokens)**.
 
 ### 1. Login
 
@@ -297,7 +297,7 @@ curl -X POST http://localhost:3000/api/auth/login \
   }'
 ```
 
-Resposta:
+Response:
 ```json
 {
   "success": true,
@@ -308,24 +308,24 @@ Resposta:
 }
 ```
 
-### 2. Usar Token
+### 2. Using Token
 
-Inclua o token no header `Authorization`:
+Include the token in the `Authorization` header:
 
 ```bash
 curl http://localhost:3000/api/bens \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
-### 3. Expiração
+### 3. Expiration
 
-Token expira em **7 dias** (configurável via `JWT_EXPIRES_IN` no `.env`).
+Token expires in **7 days** (configurable via `JWT_EXPIRES_IN` in `.env`).
 
 ---
 
-## 🧪 Testes
+## 🧪 Testing
 
-### Método 1: curl (Terminal)
+### Method 1: curl (Terminal)
 
 ```bash
 # 1. Login
@@ -334,48 +334,48 @@ TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
   -d '{"email":"admin@email.com","password":"admin123"}' \
   | jq -r '.data.token')
 
-# 2. Listar categorias
+# 2. List categories
 curl http://localhost:3000/api/categorias \
   -H "Authorization: Bearer $TOKEN"
 
-# 3. Criar bem
+# 3. Create asset
 curl -X POST http://localhost:3000/api/bens \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "tombo": "001",
-    "nome": "Cadeira",
-    "categoriaId": "UUID_DA_CATEGORIA",
-    "localizacaoId": "UUID_DA_LOCALIZACAO",
-    "sala": "Sala 1"
+    "nome": "Chair",
+    "categoriaId": "CATEGORY_UUID",
+    "localizacaoId": "LOCATION_UUID",
+    "sala": "Room 1"
   }'
 ```
 
-### Método 2: Thunder Client (VS Code)
+### Method 2: Thunder Client (VS Code)
 
-1. Instale a extensão **Thunder Client**
-2. Crie uma collection "Sistema Patrimônio"
-3. Variáveis de ambiente:
+1. Install **Thunder Client** extension
+2. Create a collection "Asset Management System"
+3. Environment variables:
    - `baseUrl`: `http://localhost:3000`
-   - `token`: (será preenchido após login)
+   - `token`: (will be filled after login)
 
-4. Configure auto-save token no login:
+4. Configure auto-save token on login:
    ```javascript
-   // Tab "Tests" no request de login
+   // "Tests" tab in login request
    if (tc.response.json.success) {
      tc.setVar("token", tc.response.json.data.token);
    }
    ```
 
-5. Use `{{baseUrl}}` e `{{token}}` nas requisições
+5. Use `{{baseUrl}}` and `{{token}}` in requests
 
-### Método 3: Postman
+### Method 3: Postman
 
-Similar ao Thunder Client, mas com interface mais robusta.
+Similar to Thunder Client, but with a more robust interface.
 
 ---
 
-## 🚢 Deploy (100% Free)
+## 🚢 Deployment (100% Free)
 
 ### Recommended: Render + Supabase ($0/month)
 
@@ -626,53 +626,53 @@ yarn db:migrate
 
 ## 🐛 Troubleshooting
 
-### Erro: Cannot connect to database
+### Error: Cannot connect to database
 
-**Solução:**
+**Solution:**
 ```bash
-# Verificar se PostgreSQL está rodando
+# Check if PostgreSQL is running
 pg_isready
 
-# Testar conexão
+# Test connection
 psql -U postgres -d patrimonio_db
 
-# Verificar credenciais
+# Verify credentials
 cat .env
 ```
 
-### Erro: Token inválido ou expirado
+### Error: Invalid or expired token
 
-**Solução:**
-- Faça login novamente
-- Token expira em 7 dias
-- Formato: `Authorization: Bearer <token>`
+**Solution:**
+- Login again
+- Token expires in 7 days
+- Format: `Authorization: Bearer <token>`
 
-### Erro: Port 3000 já em uso
+### Error: Port 3000 already in use
 
-**Solução:**
+**Solution:**
 ```bash
-# Matar processo na porta 3000
+# Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
 
-# Ou mudar porta no .env
+# Or change port in .env
 PORT=3001
 ```
 
-### Erro: Migration já executada
+### Error: Migration already executed
 
-**Solução:**
+**Solution:**
 ```bash
-# Reverter última migration
+# Undo last migration
 yarn db:migrate:undo
 
-# Ou reverter todas
+# Or undo all
 yarn db:migrate:undo:all
 
-# Re-executar
+# Re-run
 yarn db:migrate
 ```
 
-### Reset completo do banco
+### Complete database reset
 
 ```bash
 yarn db:seed:undo:all
@@ -683,60 +683,60 @@ yarn db:seed
 
 ---
 
-## 📊 Scripts Disponíveis
+## 📊 Available Scripts
 
 ```bash
-# Desenvolvimento
-yarn dev              # Inicia servidor com hot reload
+# Development
+yarn dev              # Start server with hot reload
 
 # Build
-yarn build            # Compila TypeScript para JavaScript
+yarn build            # Compile TypeScript to JavaScript
 
-# Produção
-yarn start            # Inicia servidor de produção
+# Production
+yarn start            # Start production server
 
 # Database
-yarn db:migrate       # Executa migrations
-yarn db:migrate:undo  # Reverte última migration
-yarn db:seed          # Executa seeds
-yarn db:seed:undo:all # Remove todos os seeds
+yarn db:migrate       # Run migrations
+yarn db:migrate:undo  # Undo last migration
+yarn db:seed          # Run seeds
+yarn db:seed:undo:all # Remove all seeds
 ```
 
 ---
 
-## 🔒 Segurança
+## 🔒 Security
 
-### Implementado
+### Implemented
 
-✅ JWT com expiração configurável
-✅ Senhas criptografadas (bcrypt, 10 rounds)
-✅ Validação de input (Zod schemas)
-✅ CORS configurado
+✅ JWT with configurable expiration
+✅ Encrypted passwords (bcrypt, 10 rounds)
+✅ Input validation (Zod schemas)
+✅ CORS configured
 ✅ Role-based access control (ADMIN/USER)
-✅ Verificação de perfil no banco (não apenas JWT)
-✅ Soft deletes (preserva dados)
-✅ Proteção contra SQL injection (Sequelize ORM)
+✅ Profile verification in database (not just JWT)
+✅ Soft deletes (preserves data)
+✅ SQL injection protection (Sequelize ORM)
 
-### Recomendações para Produção
+### Production Recommendations
 
 - [ ] Use HTTPS (Let's Encrypt)
 - [ ] Configure rate limiting
-- [ ] Implemente logs estruturados
-- [ ] Backup automático do banco
-- [ ] Monitore erros (Sentry, etc.)
-- [ ] Use secrets manager para credenciais
+- [ ] Implement structured logging
+- [ ] Automatic database backups
+- [ ] Monitor errors (Sentry, etc.)
+- [ ] Use secrets manager for credentials
 
 ---
 
-## 👥 Credenciais Padrão
+## 👥 Default Credentials
 
-Após executar `yarn db:seed`:
+After running `yarn db:seed`:
 
 **Email:** admin@email.com
-**Senha:** admin123
-**Perfil:** ADMIN
+**Password:** admin123
+**Profile:** ADMIN
 
-⚠️ **IMPORTANTE:** Mude a senha após o primeiro login em produção!
+⚠️ **IMPORTANT:** Change password after first login in production!
 
 ---
 
@@ -744,40 +744,40 @@ Após executar `yarn db:seed`:
 
 ### v1.0.0 (2024-12-04)
 
-- ✅ Arquitetura relacional com tabelas de referência
-- ✅ 40+ endpoints REST completos
-- ✅ Autenticação JWT com RBAC
-- ✅ Migrations e seeds configurados
-- ✅ Documentação completa
-- ✅ Pronto para deploy
+- ✅ Relational architecture with reference tables
+- ✅ 40+ complete REST endpoints
+- ✅ JWT authentication with RBAC
+- ✅ Configured migrations and seeds
+- ✅ Complete documentation
+- ✅ Ready for deployment
 
 ---
 
-## 🤝 Contribuindo
+## 🤝 Contributing
 
-1. Fork o projeto
-2. Crie uma branch: `git checkout -b feature/nova-feature`
-3. Commit: `git commit -m 'Adiciona nova feature'`
-4. Push: `git push origin feature/nova-feature`
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch: `git checkout -b feature/new-feature`
+3. Commit: `git commit -m 'Add new feature'`
+4. Push: `git push origin feature/new-feature`
+5. Open a Pull Request
 
 ---
 
-## 📄 Licença
+## 📄 License
 
 MIT
 
 ---
 
-## 🆘 Suporte
+## 🆘 Support
 
-Dúvidas ou problemas?
+Questions or problems?
 
-1. Verifique os logs do servidor
-2. Teste conexão com banco de dados
-3. Confirme que migrations rodaram
-4. Revise as variáveis de ambiente
+1. Check server logs
+2. Test database connection
+3. Confirm migrations ran
+4. Review environment variables
 
 ---
 
-**Desenvolvido com ❤️ para gerenciamento de patrimônio de nossa paróquia**
+**Developed with ❤️ for our parish asset management**
