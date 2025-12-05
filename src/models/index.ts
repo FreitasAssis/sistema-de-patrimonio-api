@@ -1,15 +1,27 @@
 import sequelize from '../config/database';
 
-// Reference tables (lookup tables)
-export { Perfil } from './Perfil';
-export { Categoria } from './Categoria';
-export { Localizacao } from './Localizacao';
-export { TipoMovimentacao } from './TipoMovimentacao';
+// Import model classes
+import { Perfil } from './Perfil';
+import { Categoria } from './Categoria';
+import { Localizacao } from './Localizacao';
+import { TipoMovimentacao } from './TipoMovimentacao';
+import { User } from './User';
+import { Bem } from './Bem';
+import { Movimentacao } from './Movimentacao';
 
-// Main domain tables
-export { User } from './User';
-export { Bem } from './Bem';
-export { Movimentacao } from './Movimentacao';
+// Add models to Sequelize instance
+sequelize.addModels([
+  Perfil,
+  Categoria,
+  Localizacao,
+  TipoMovimentacao,
+  User,
+  Bem,
+  Movimentacao,
+]);
+
+// Re-export models
+export { Perfil, Categoria, Localizacao, TipoMovimentacao, User, Bem, Movimentacao };
 
 // Default export for Sequelize
 export default sequelize;

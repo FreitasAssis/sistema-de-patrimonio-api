@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as dotenv from 'dotenv';
-import * as path from 'path';
 
 dotenv.config();
 
@@ -27,15 +26,7 @@ const sequelize = new Sequelize({
     family: 4,
   },
 
-  models: [
-    path.join(__dirname, '..', 'models', 'Perfil'),
-    path.join(__dirname, '..', 'models', 'Categoria'),
-    path.join(__dirname, '..', 'models', 'Localizacao'),
-    path.join(__dirname, '..', 'models', 'TipoMovimentacao'),
-    path.join(__dirname, '..', 'models', 'User'),
-    path.join(__dirname, '..', 'models', 'Bem'),
-    path.join(__dirname, '..', 'models', 'Movimentacao'),
-  ],
+  models: [], // Will be added after initialization
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
 
   // Connection pool settings (optimized for serverless/PaaS)

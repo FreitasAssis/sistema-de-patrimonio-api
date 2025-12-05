@@ -4,6 +4,9 @@ import * as dotenv from 'dotenv';
 import sequelize, { testConnection, syncDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler.middleware';
 
+// Import models to initialize them
+import './models';
+
 // Import routes
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
@@ -34,6 +37,8 @@ const fastify = Fastify({
       },
     },
   },
+  // Increase body size limit for base64 images (10MB)
+  bodyLimit: 10 * 1024 * 1024, // 10MB in bytes
 });
 
 // Register CORS
