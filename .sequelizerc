@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  'config': path.resolve('dist', 'config', 'database.js'), // Use compiled JS in dist
+  'config': path.resolve('src', 'config', 'database.js'), // Use compiled JS in dist
   'models-path': path.resolve('src', 'models'),
   'seeders-path': path.resolve('src', 'seeders'),
   'migrations-path': path.resolve('src', 'migrations'),
