@@ -24,7 +24,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   });
 
   // UPDATE user (admin only)
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: [requireAdmin, validate(updateUserSchema)],
     handler: userController.updateUser,
   });

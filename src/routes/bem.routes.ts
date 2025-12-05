@@ -24,7 +24,7 @@ export default async function bemRoutes(fastify: FastifyInstance) {
   });
 
   // UPDATE bem
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: validate(updateBemSchema),
     handler: bemController.updateBem,
   });

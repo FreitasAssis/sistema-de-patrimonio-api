@@ -22,7 +22,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     handler: authController.logout,
   });
 
-  fastify.put('/change-password', {
+  fastify.patch('/change-password', {
     preHandler: [authenticate, validate(changePasswordSchema)],
     handler: authController.changePassword,
   });

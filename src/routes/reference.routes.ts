@@ -33,7 +33,7 @@ export async function perfilRoutes(fastify: FastifyInstance) {
     preHandler: [requireAdmin, validate(createPerfilSchema)],
     handler: perfilController.create,
   });
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: [requireAdmin, validate(updatePerfilSchema)],
     handler: perfilController.update,
   });
@@ -56,7 +56,7 @@ export async function categoriaRoutes(fastify: FastifyInstance) {
     preHandler: [requireAdmin, validate(createReferenceSchema)],
     handler: categoriaController.create,
   });
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: [requireAdmin, validate(updateReferenceSchema)],
     handler: categoriaController.update,
   });
@@ -79,7 +79,7 @@ export async function localizacaoRoutes(fastify: FastifyInstance) {
     preHandler: [requireAdmin, validate(createLocalizacaoSchema)],
     handler: localizacaoController.create,
   });
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: [requireAdmin, validate(updateLocalizacaoSchema)],
     handler: localizacaoController.update,
   });
@@ -102,7 +102,7 @@ export async function tipoMovimentacaoRoutes(fastify: FastifyInstance) {
     preHandler: [requireAdmin, validate(createTipoMovimentacaoSchema)],
     handler: tipoMovimentacaoController.create,
   });
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: [requireAdmin, validate(updateTipoMovimentacaoSchema)],
     handler: tipoMovimentacaoController.update,
   });

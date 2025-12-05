@@ -98,7 +98,7 @@ const start = async () => {
     console.log('   • POST   /api/auth/login');
     console.log('   • POST   /api/auth/logout');
     console.log('   • POST   /api/auth/recover-password');
-    console.log('   • PUT    /api/auth/change-password');
+    console.log('   • PATCH  /api/auth/change-password');
     console.log('   • GET    /api/auth/me');
     console.log('   • GET    /api/users');
     console.log('   • POST   /api/users');

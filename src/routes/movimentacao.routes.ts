@@ -24,7 +24,7 @@ export default async function movimentacaoRoutes(fastify: FastifyInstance) {
   });
 
   // UPDATE movimentacao
-  fastify.put('/:id', {
+  fastify.patch('/:id', {
     preHandler: validate(updateMovimentacaoSchema),
     handler: movimentacaoController.updateMovimentacao,
   });
