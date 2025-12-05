@@ -74,7 +74,7 @@ export const createMovimentacao = async (
   reply: FastifyReply
 ) => {
   try {
-    const { bemId, tombo, nomeItem, tipoId, pessoa, contato, pastoral, dataEmprestimo, dataDevolucao } = request.body;
+    const { bemId, tombo, nomeItem, tipoId, pessoa, contato, pastoral, observacao, dataEmprestimo, dataDevolucao } = request.body;
 
     // Verify bem exists
     const bem = await Bem.findByPk(bemId);
@@ -111,6 +111,7 @@ export const createMovimentacao = async (
       pessoa,
       contato,
       pastoral,
+      observacao: observacao || null,
       dataEmprestimo,
       dataDevolucao: dataDevolucao || null,
       usuarioId: request.user?.id,
@@ -137,7 +138,7 @@ export const updateMovimentacao = async (
 ) => {
   try {
     const { id } = request.params;
-    const { dataDevolucao } = request.body;
+    const { dataDevolucao, observacao } = request.body;
 
     const movimentacao = await Movimentacao.findByPk(id);
 
@@ -146,7 +147,11 @@ export const updateMovimentacao = async (
     }
 
     // Update movimentacao (typically registering a return)
-    await movimentacao.update({ dataDevolucao });
+    const updateData: any = { dataDevolucao };
+    if (observacao !== undefined) {
+      updateData.observacao = observacao;
+    }
+    await movimentacao.update(updateData);
 
     // Fetch updated movimentacao with relations
     const updatedMovimentacao = await Movimentacao.findByPk(id, {

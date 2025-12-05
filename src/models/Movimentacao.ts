@@ -67,6 +67,15 @@ export class Movimentacao extends Model {
   pastoral!: string;
 
   @Column({
+    type: DataType.TEXT,
+    allowNull: true,
+    validate: {
+      len: [0, 500],
+    },
+  })
+  observacao?: string | null;
+
+  @Column({
     type: DataType.DATEONLY,
     allowNull: false,
   })
